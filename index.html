@@ -553,14 +553,14 @@ ros2 launch sitl_ros2_cv yolo_seg_lv_gb.xml</code></pre>
             </p>
             <div class="repo__links">
               <a class="btn btn--primary btn--xs" href="https://github.com/SITL-Eng/sitl_ros2_dvrk" target="_blank" rel="noopener">GitHub</a>
-              <a class="btn btn--ghost btn--xs" href="https://github.com/hossein-haeri/sitl_ros2_interfaces" target="_blank" rel="noopener">Required: sitl_ros2_interfaces</a>
+              <a class="btn btn--ghost btn--xs" href="https://github.com/SITL-Eng/sitl_ros2_interfaces" target="_blank" rel="noopener">Required: sitl_ros2_interfaces</a>
             </div>
             <div class="codeblock">
               <button class="copy" data-copy aria-label="Copy code">Copy</button>
               <pre><code># Requires ROS 2 Humble + the official dVRK ROS2 stack
 cd ~/ros2_ws/src
 git clone https://github.com/SITL-Eng/sitl_ros2_dvrk.git
-git clone https://github.com/hossein-haeri/sitl_ros2_interfaces.git
+git clone https://github.com/SITL-Eng/sitl_ros2_interfaces.git
 pip install pyquaternion pyserial
 cd ~/ros2_ws && colcon build && source install/setup.bash</code></pre>
             </div>
@@ -595,6 +595,24 @@ python scripts/train_inst_seg_yolo11.py --data-dir /path/to/instrument_segmentat
             </div>
           </article>
 
+        </div>
+
+        <!-- Supporting ROS 2 packages -->
+        <div class="subrepos-wrap">
+          <h3 class="subrepos-title">Supporting ROS 2 packages</h3>
+          <p class="subrepos-sub">Shared infrastructure that the stack above is built on.</p>
+          <div class="subrepos">
+            <a class="subrepo" href="https://github.com/SITL-Eng/sitl_ros2_pedal" target="_blank" rel="noopener">
+              <h4 class="subrepo__name"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><use href="#i-github" /></svg> sitl_ros2_pedal</h4>
+              <p class="subrepo__tag">Custom da Vinci pedal &amp; electrosurgical-unit (ESU) control &mdash; read the surgeon's pedal presses and fire monopolar energy from ROS 2 (used for autonomous dissection and CRCD pedal logging).</p>
+              <span class="subrepo__langs"><span>ROS 2</span><span>Arduino</span><span>Python</span></span>
+            </a>
+            <a class="subrepo" href="https://github.com/SITL-Eng/sitl_ros2_interfaces" target="_blank" rel="noopener">
+              <h4 class="subrepo__name"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><use href="#i-github" /></svg> sitl_ros2_interfaces</h4>
+              <p class="subrepo__tag">The shared custom ROS 2 messages used across the dVRK platform &mdash; timestamped primitives for synchronization, plus perception and sensory-glove messages.</p>
+              <span class="subrepo__langs"><span>ROS 2</span><span>rosidl</span><span>msgs</span></span>
+            </a>
+          </div>
         </div>
       </div>
     </section>

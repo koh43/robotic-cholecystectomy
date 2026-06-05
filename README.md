@@ -91,6 +91,8 @@ but a local server best matches the GitHub Pages environment.)
 | [SITL-Eng/sitl_ros2_cv](https://github.com/SITL-Eng/sitl_ros2_cv) | Real-time computer vision for the da Vinci stereo endoscope |
 | [SITL-Eng/sitl_ros2_dvrk](https://github.com/SITL-Eng/sitl_ros2_dvrk) | Control layer for the da Vinci Research Kit (dVRK) |
 | [koh43/stereo-endo-pose-vit](https://github.com/koh43/stereo-endo-pose-vit) | ViT-based instrument pose estimation from stereo images |
+| [SITL-Eng/sitl_ros2_pedal](https://github.com/SITL-Eng/sitl_ros2_pedal) | Custom da Vinci pedal & electrosurgical-unit (ESU) control |
+| [SITL-Eng/sitl_ros2_interfaces](https://github.com/SITL-Eng/sitl_ros2_interfaces) | Shared custom ROS 2 messages for the dVRK platform |
 
 ---
 
