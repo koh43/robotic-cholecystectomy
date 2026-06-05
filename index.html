@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Towards Autonomous Robot-Assisted Surgery — Ki-Hwan Oh</title>
+  <meta name="description" content="A PhD dissertation on teaching surgical robots to see, understand, and assist during gallbladder removal — with an open dataset, a vision-guided autonomous dissection system, and vision-only instrument tracking. Explore the work and the open-source code." />
+  <meta name="author" content="Ki-Hwan Oh" />
+
+  <!-- Open Graph / social -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Towards Autonomous Robot-Assisted Surgery" />
+  <meta property="og:description" content="Teaching surgical robots to see, understand, and assist — toward automating gallbladder removal. Open dataset + open-source code." />
+  <meta property="og:image" content="assets/img/crcd_showcase.png" />
+
+  <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- ============================== NAV ============================== -->
+  <header class="nav" id="nav">
+    <div class="nav__inner">
+      <a class="nav__brand" href="#top" aria-label="Home">
+        <span class="nav__mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32" width="28" height="28"><use href="#logo-mark" /></svg>
+        </span>
+        <span class="nav__brandtext">Autonomous&nbsp;RAS</span>
+      </a>
+
+      <nav class="nav__links" aria-label="Primary">
+        <a href="#overview">Overview</a>
+        <a href="#dataset">Dataset</a>
+        <a href="#dissection">Dissection</a>
+        <a href="#vision">Vision&nbsp;AI</a>
+        <a href="#replicate">Replicate</a>
+        <a href="#publications">Papers</a>
+        <a href="#about">About</a>
+      </nav>
+
+      <div class="nav__cta">
+        <a class="btn btn--ghost btn--sm" href="https://github.com/koh43" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><use href="#i-github" /></svg>
+          GitHub
+        </a>
+      </div>
+
+      <button class="nav__toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ============================== HERO ============================== -->
+  <main id="top">
+    <section class="hero" id="hero">
+      <div class="hero__bg" aria-hidden="true"></div>
+      <div class="hero__grid">
+        <div class="hero__copy">
+          <p class="eyebrow">PhD Dissertation · University of Illinois Chicago · 2026</p>
+          <h1 class="hero__title">Towards Autonomous<br /><span class="grad-text">Robot-Assisted Surgery</span></h1>
+          <p class="hero__lead">
+            Teaching a surgical robot to <strong>see</strong>, <strong>understand</strong>, and <strong>assist</strong> &mdash;
+            working toward automating one of the world's most common operations: removing the gallbladder.
+          </p>
+          <div class="hero__actions">
+            <a class="btn btn--primary" href="assets/docs/thesis.pdf" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><use href="#i-doc" /></svg>
+              Read the thesis
+            </a>
+            <a class="btn btn--ghost" href="#replicate">
+              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><use href="#i-code" /></svg>
+              Explore the code
+            </a>
+            <a class="btn btn--ghost" href="https://huggingface.co/datasets/SITL-Eng/CRCD" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><use href="#i-data" /></svg>
+              Get the dataset
+            </a>
+          </div>
+          <p class="hero__byline">
+            by <strong>Ki-Hwan Oh</strong> &nbsp;·&nbsp; advised by Prof. Miloš Žefran &nbsp;·&nbsp; Surgical Innovation &amp; Training Lab
+          </p>
+        </div>
+
+        <div class="hero__media">
+          <figure class="device">
+            <div class="device__bar" aria-hidden="true">
+              <span></span><span></span><span></span>
+              <p class="device__label">da Vinci endoscope — autonomous dissection</p>
+            </div>
+            <video class="device__video" autoplay loop muted playsinline preload="auto"
+                   poster="assets/video/autodissect_poster.png"
+                   aria-label="The da Vinci robot autonomously grasping and dissecting a gallbladder from the liver.">
+              <source src="assets/video/autodissect.mp4" type="video/mp4" />
+            </video>
+          </figure>
+          <p class="hero__media-cap">Live system: the robot grasps the gallbladder, stretches the tissue, and follows the cut line on its own.</p>
+        </div>
+      </div>
+
+      <a class="scroll-hint" href="#overview" aria-label="Scroll to overview">
+        <span></span>
+      </a>
+    </section>
+
+    <!-- ============================== STAT STRIP ============================== -->
+    <section class="stats" aria-label="Key numbers">
+      <div class="stats__inner">
+        <div class="stat"><span class="stat__num" data-count="755000" data-suffix="+">0</span><span class="stat__label">Annotated stereo frames in the dataset</span></div>
+        <div class="stat"><span class="stat__num" data-count="7">0</span><span class="stat__label">Surgeons recorded, with documented skill levels</span></div>
+        <div class="stat"><span class="stat__num" data-count="3.3" data-suffix="×" data-decimals="1">0</span><span class="stat__label">Faster autonomous dissection (v2 vs. v1)</span></div>
+        <div class="stat"><span class="stat__num" data-prefix="&lt;" data-count="0.5" data-suffix=" mm" data-decimals="1">0</span><span class="stat__label">Boundary-tracking error (sub-millimeter)</span></div>
+        <div class="stat"><span class="stat__num" data-prefix="~" data-count="1" data-suffix=" cm">0</span><span class="stat__label">Instrument tip error from images alone</span></div>
+        <div class="stat"><span class="stat__num" data-count="4">0</span><span class="stat__label">Open-source repositories to build on</span></div>
+      </div>
+    </section>
+
+    <!-- ============================== OVERVIEW (plain language) ============================== -->
+    <section class="section" id="overview">
+      <div class="container">
+        <div class="section__head">
+          <p class="kicker">The big idea, in plain language</p>
+          <h2>What is this research about?</h2>
+          <p class="section__sub">
+            No medical or robotics background needed. Here is the whole story in four short ideas.
+          </p>
+        </div>
+
+        <div class="explain">
+          <article class="explain__card">
+            <span class="explain__step">01</span>
+            <h3>Surgeons already use robots</h3>
+            <p>
+              In modern operating rooms, a surgeon often sits at a console and controls thin robotic arms that reach inside
+              the body through tiny incisions &mdash; a bit like a very precise video game with real instruments. The most
+              widely used system is the <strong>da Vinci</strong> surgical robot.
+            </p>
+          </article>
+
+          <article class="explain__card">
+            <span class="explain__step">02</span>
+            <h3>The robot still does nothing on its own</h3>
+            <p>
+              Today the robot only moves when the surgeon moves. My question: can it begin to handle <em>parts</em> of an
+              operation by itself &mdash; safely, and guided only by what its camera sees inside the body?
+            </p>
+          </article>
+
+          <article class="explain__card">
+            <span class="explain__step">03</span>
+            <h3>Gallbladder removal is the perfect first step</h3>
+            <p>
+              A <strong>cholecystectomy</strong> (removing the small organ that stores bile) is one of the most common
+              operations in the world, and its steps are highly standardized. That predictability makes it an ideal,
+              lower-risk target to start automating.
+            </p>
+          </article>
+
+          <article class="explain__card">
+            <span class="explain__step">04</span>
+            <h3>So I gave the robot eyes and a baseline brain</h3>
+            <p>
+              I built the data, the perception, and the control needed for the robot to <strong>see the anatomy</strong>,
+              <strong>decide where to separate tissue</strong>, and <strong>move precisely</strong> &mdash; then released
+              everything openly so others can reproduce it and push further.
+            </p>
+          </article>
+        </div>
+
+        <!-- Grounding figure for non-experts -->
+        <figure class="ground-fig">
+          <img src="assets/img/davinci_system.png" alt="The da Vinci surgical system: a surgeon seated at the console on the left, the patient-side cart with four robotic arms over a draped patient in the center, and the vision tower with a 3D display on the right." loading="lazy" />
+          <figcaption>
+            Meet the <strong>da Vinci</strong> system at the heart of this work. The surgeon operates from a
+            <strong>console</strong> (left); the <strong>patient-side cart</strong> holds the robotic arms and the
+            stereo endoscope that reach inside the body (center); and the <strong>vision tower</strong> processes and
+            shows the 3D view (right). My research adds perception and autonomy on top of this platform.
+          </figcaption>
+        </figure>
+
+        <!-- See / Decide / Act -->
+        <div class="pipeline">
+          <h3 class="pipeline__title">How a robot &ldquo;does surgery on its own&rdquo; &mdash; three jobs it must master</h3>
+          <div class="pipeline__row">
+            <div class="pipe">
+              <div class="pipe__icon"><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><use href="#i-eye" /></svg></div>
+              <h4>See</h4>
+              <p>Look at the stereo (3D) camera feed and recognize the gallbladder, the liver, and each instrument &mdash; in real time.</p>
+              <span class="pipe__tag">Perception</span>
+            </div>
+            <div class="pipe__arrow" aria-hidden="true">→</div>
+            <div class="pipe">
+              <div class="pipe__icon"><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><use href="#i-route" /></svg></div>
+              <h4>Decide</h4>
+              <p>Find the exact boundary where the gallbladder meets the liver, and plan a safe path to separate them.</p>
+              <span class="pipe__tag">Planning</span>
+            </div>
+            <div class="pipe__arrow" aria-hidden="true">→</div>
+            <div class="pipe">
+              <div class="pipe__icon"><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><use href="#i-arm" /></svg></div>
+              <h4>Act</h4>
+              <p>Drive the robotic arms to grasp, stretch, and cut along that boundary with sub-millimeter accuracy.</p>
+              <span class="pipe__tag">Control</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Three contributions intro -->
+        <div class="contrib-intro">
+          <h3>Three open contributions that make this possible</h3>
+          <div class="contrib-cards">
+            <a class="ccard" href="#dataset">
+              <span class="ccard__num">01</span>
+              <h4>A real-surgery dataset</h4>
+              <p>The data to learn from: synchronized video, robot motion, and expert annotations from real procedures.</p>
+              <span class="ccard__go">Explore the dataset →</span>
+            </a>
+            <a class="ccard" href="#dissection">
+              <span class="ccard__num">02</span>
+              <h4>Autonomous dissection</h4>
+              <p>A working, vision-guided system that separates the gallbladder from the liver largely on its own.</p>
+              <span class="ccard__go">See it work →</span>
+            </a>
+            <a class="ccard" href="#vision">
+              <span class="ccard__num">03</span>
+              <h4>Vision-only instrument tracking</h4>
+              <p>An AI that locates the instruments in 3D from camera images alone &mdash; no robot sensors required.</p>
+              <span class="ccard__go">How it works →</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================== CONTRIBUTION 1: DATASET ============================== -->
+    <section class="section section--alt" id="dataset">
+      <div class="container">
+        <div class="feature">
+          <div class="feature__media">
+            <img src="assets/img/crcd_showcase.png" alt="The recording setup and a montage of stereo endoscope frames, robot kinematics, and pedal signals that make up the CRCD dataset." loading="lazy" />
+          </div>
+          <div class="feature__body">
+            <p class="kicker"><span class="badge badge--01">Contribution 01</span></p>
+            <h2>CRCD &mdash; a window into real robotic surgery</h2>
+            <p class="lead-sm">
+              To teach a robot, you first need examples. The <strong>Comprehensive Robotic Cholecystectomy Dataset (CRCD)</strong>
+              is one of the most complete public recordings of real robotic gallbladder surgeries ever released &mdash; think of
+              it as a richly annotated &ldquo;textbook&rdquo; of how experts actually operate.
+            </p>
+            <p>
+              It was recorded during <em>ex vivo</em> procedures on porcine (pig) livers and brings together, perfectly
+              time-synchronized, every signal a learning system could want:
+            </p>
+            <ul class="ticks">
+              <li><strong>Stereo endoscopic video</strong> &mdash; the robot's 3D view inside the body</li>
+              <li><strong>Full robot &amp; console kinematics</strong> &mdash; exactly how every arm and the surgeon's hands moved</li>
+              <li><strong>Foot-pedal signals</strong> &mdash; when the surgeon delivered cutting/sealing energy (rarely shared publicly)</li>
+              <li><strong>Dense annotations</strong> &mdash; tissue segmentation and instrument keypoints</li>
+            </ul>
+            <div class="chips">
+              <span class="chip chip--hot">755,000+ stereo frames</span>
+              <span class="chip">7 surgeons, rated by experience</span>
+              <span class="chip">Multimodal &amp; synchronized</span>
+              <span class="chip">CC-BY-4.0</span>
+            </div>
+            <div class="btn-row">
+              <a class="btn btn--primary btn--sm" href="https://huggingface.co/datasets/SITL-Eng/CRCD" target="_blank" rel="noopener">
+                <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><use href="#i-data" /></svg> Hugging Face
+              </a>
+              <a class="btn btn--ghost btn--sm" href="https://github.com/SITL-Eng/CRCD" target="_blank" rel="noopener">
+                <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><use href="#i-github" /></svg> GitHub
+              </a>
+              <a class="btn btn--ghost btn--sm" href="https://arxiv.org/abs/2312.01183" target="_blank" rel="noopener">ISMR&nbsp;2024 paper</a>
+              <a class="btn btn--ghost btn--sm" href="https://doi.org/10.1142/S2424905X25500060" target="_blank" rel="noopener">JMRR&nbsp;2025 (extended)</a>
+            </div>
+            <p class="why">
+              <strong>Why it matters:</strong> existing datasets were missing something &mdash; kinematics, the surgeon's
+              hand motion, pedal signals, or dense labels on a <em>real</em> procedure. CRCD brings them together, so
+              researchers worldwide can train and fairly compare perception, control, and learning models.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================== CONTRIBUTION 2: AUTONOMOUS DISSECTION ============================== -->
+    <section class="section" id="dissection">
+      <div class="container">
+        <div class="feature feature--reverse">
+          <div class="feature__media">
+            <figure class="vidframe">
+              <video loop muted playsinline preload="none"
+                     poster="assets/video/autodissect_poster.png"
+                     data-lazy-video
+                     aria-label="The da Vinci robot grasping the gallbladder and then dissecting along the boundary with the liver.">
+                <source data-src="assets/video/autodissect.mp4" type="video/mp4" />
+              </video>
+              <figcaption>The upgraded bimanual system: one arm grasps and stretches the tissue while the other follows the cut line.</figcaption>
+            </figure>
+          </div>
+          <div class="feature__body">
+            <p class="kicker"><span class="badge badge--02">Contribution 02</span></p>
+            <h2>A robot that dissects from sight alone</h2>
+            <p class="lead-sm">
+              The core demonstration of the thesis: a framework that lets the da Vinci robot <strong>separate the gallbladder
+              from the liver using only its stereo camera</strong> &mdash; no pre-scripted trajectory, no external trackers.
+            </p>
+            <p>
+              It evolved through two generations. The first (v1) followed a pre-planned path with a single arm. The
+              upgraded second version (v2) is <strong>bimanual and adaptive</strong>: it automatically grasps the
+              gallbladder, stretches it to expose the boundary, and continuously re-finds the cut line as the tissue
+              changes &mdash; delivering energy along the way.
+            </p>
+            <ul class="ticks">
+              <li>Automatic grasping &amp; tissue stretching for a clear, stable boundary</li>
+              <li>Online, boundary-guided cutting that adapts in real time</li>
+              <li>A new &ldquo;liver-bed&rdquo; tissue class to keep tracking after each pass &mdash; groundwork for multi-round dissection</li>
+            </ul>
+            <div class="result-grid">
+              <div class="result"><span class="result__big">3.3×</span><span class="result__cap">faster than v1<br/>(~101 s → ~31 s per pass)</span></div>
+              <div class="result"><span class="result__big">0.49 mm</span><span class="result__cap">boundary-tracking RMSE<br/>(sub-millimeter)</span></div>
+              <div class="result"><span class="result__big">11 + 5</span><span class="result__cap">trials on porcine liver<br/>&amp; tissue proxies</span></div>
+            </div>
+            <div class="btn-row">
+              <a class="btn btn--ghost btn--sm" href="https://github.com/SITL-Eng/sitl_ros2_cv" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><use href="#i-github" /></svg> Vision code</a>
+              <a class="btn btn--ghost btn--sm" href="https://github.com/SITL-Eng/sitl_ros2_dvrk" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><use href="#i-github" /></svg> Control code</a>
+              <a class="btn btn--ghost btn--sm" href="https://doi.org/10.1109/BioRob60516.2024.10719948" target="_blank" rel="noopener">BioRob&nbsp;2024</a>
+              <a class="btn btn--ghost btn--sm" href="https://doi.org/10.1109/IROS60139.2025.11246364" target="_blank" rel="noopener">IROS&nbsp;2025</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Two-step demo -->
+        <div class="duo">
+          <figure class="vidframe vidframe--sm">
+            <video loop muted playsinline preload="none" data-lazy-video aria-label="The forceps aligning, grasping, and pulling the gallbladder until the boundary is taut.">
+              <source data-src="assets/video/v2_grasp.mp4" type="video/mp4" />
+            </video>
+            <figcaption><strong>Step 1 — Grasp.</strong> The forceps align, grasp, and pull until the boundary is taut.</figcaption>
+          </figure>
+          <figure class="vidframe vidframe--sm">
+            <video loop muted playsinline preload="none" data-lazy-video aria-label="The cautery hook following the detected boundary while delivering energy to dissect.">
+              <source data-src="assets/video/v2_dissect.mp4" type="video/mp4" />
+            </video>
+            <figcaption><strong>Step 2 — Dissect.</strong> The hook follows the live-detected boundary while delivering energy.</figcaption>
+          </figure>
+        </div>
+
+        <!-- Perception sub-feature -->
+        <div class="subfeature">
+          <h3 class="subfeature__title">Under the hood: teaching the robot to recognize what it sees</h3>
+          <p class="subfeature__lead">
+            None of this works without reliable perception. The system identifies anatomy and instruments frame-by-frame,
+            and reconstructs the scene in 3D from the stereo camera. The perception stack matured from Detectron2 to
+            MaskDINO to <strong>YOLO11</strong>, which gave the most stable, real-time boundaries.
+          </p>
+          <div class="gallery">
+            <figure>
+              <img src="assets/img/keypoints.svg" alt="Surgical instrument with detected keypoints marking its tip and joints." loading="lazy" />
+              <figcaption>Instrument keypoint detection &mdash; locating the tool tip and joints.</figcaption>
+            </figure>
+            <figure>
+              <img src="assets/img/liver_bed.svg" alt="Annotation of the liver bed region that remains after the gallbladder is dissected away." loading="lazy" />
+              <figcaption>The new &ldquo;liver-bed&rdquo; class &mdash; what's left after a dissection pass.</figcaption>
+            </figure>
+            <figure>
+              <img src="assets/img/system_arch.svg" alt="Block diagram of the version 2 autonomous dissection system architecture, from perception through control." loading="lazy" />
+              <figcaption>The v2 system architecture, end to end.</figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================== CONTRIBUTION 3: VISION AI ============================== -->
+    <section class="section section--alt" id="vision">
+      <div class="container">
+        <div class="feature">
+          <div class="feature__media">
+            <div class="stereo">
+              <figure class="vidframe vidframe--sm">
+                <video loop muted playsinline preload="none" poster="assets/video/vit_left_poster.png" data-lazy-video aria-label="Left endoscope view with the predicted instrument tip position overlaid.">
+                  <source data-src="assets/video/vit_left.mp4" type="video/mp4" />
+                </video>
+                <figcaption>Left camera</figcaption>
+              </figure>
+              <figure class="vidframe vidframe--sm">
+                <video loop muted playsinline preload="none" poster="assets/video/vit_right_poster.png" data-lazy-video aria-label="Right endoscope view with the predicted instrument tip trajectory overlaid.">
+                  <source data-src="assets/video/vit_right.mp4" type="video/mp4" />
+                </video>
+                <figcaption>Right camera</figcaption>
+              </figure>
+            </div>
+            <p class="stereo__cap">Predicted instrument tip position, recovered purely from the stereo images.</p>
+          </div>
+          <div class="feature__body">
+            <p class="kicker"><span class="badge badge--03">Contribution 03</span></p>
+            <h2>Finding the instruments in 3D &mdash; from pictures alone</h2>
+            <p class="lead-sm">
+              Robots normally know where their tools are from internal sensors (encoders). But that link can drift, break,
+              or simply be unavailable when learning from <em>video</em>. So I asked: <strong>can we recover an instrument's
+              3D position using nothing but the camera images?</strong>
+            </p>
+            <p>
+              The answer is a baseline framework built on <strong>Vision Transformers (ViT)</strong>. Each instrument gets
+              its own backbone, first trained to segment the tool, then paired with a lightweight stereo head that estimates
+              where the tip is in space &mdash; one model per instrument, which works better than forcing both into one.
+            </p>
+            <div class="result-grid">
+              <div class="result"><span class="result__big">0.94 cm</span><span class="result__cap">tip error<br/>Permanent Cautery Hook</span></div>
+              <div class="result"><span class="result__big">1.13 cm</span><span class="result__cap">tip error<br/>Fenestrated Bipolar Forceps</span></div>
+              <div class="result"><span class="result__big">Image-only</span><span class="result__cap">no robot encoders<br/>required at inference</span></div>
+            </div>
+            <p class="why">
+              <strong>Why it matters:</strong> recovering instrument state from images alone is a stepping stone to full
+              6-degree-of-freedom pose estimation, and to training robots from surgical video where sensor data doesn't exist.
+            </p>
+            <div class="btn-row">
+              <a class="btn btn--primary btn--sm" href="https://github.com/koh43/stereo-endo-pose-vit" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><use href="#i-github" /></svg> stereo-endo-pose-vit</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="gallery gallery--two">
+          <figure>
+            <img src="assets/img/vit_arch.svg" alt="Architecture diagram of the Vision Transformer pose-estimation model with stereo inputs and per-component heads." loading="lazy" />
+            <figcaption>The ViT backbone + stereo pose-head architecture.</figcaption>
+          </figure>
+          <figure>
+            <img src="assets/img/vit_gradcam.svg" alt="Grad-CAM heatmaps showing the model attends to the instrument tips when predicting their position." loading="lazy" />
+            <figcaption>Grad-CAM confirms the model looks at the instruments themselves.</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================== REPLICATE ============================== -->
+    <section class="section" id="replicate">
+      <div class="container">
+        <div class="section__head">
+          <p class="kicker">For researchers &amp; engineers</p>
+          <h2>Use this work as your baseline</h2>
+          <p class="section__sub">
+            Everything is open source. Whether you want the data, real-time surgical vision, da Vinci control, or a
+            vision-only pose model, start from one of these four repositories and build on top.
+          </p>
+        </div>
+
+        <!-- Where to start -->
+        <div class="start">
+          <h3 class="start__title">Where should you start?</h3>
+          <div class="start__grid">
+            <a class="startcard" href="#repo-crcd">
+              <span class="startcard__q">I want the data</span>
+              <span class="startcard__a">CRCD <span aria-hidden="true">→</span></span>
+            </a>
+            <a class="startcard" href="#repo-cv">
+              <span class="startcard__q">Real-time surgical vision</span>
+              <span class="startcard__a">sitl_ros2_cv <span aria-hidden="true">→</span></span>
+            </a>
+            <a class="startcard" href="#repo-dvrk">
+              <span class="startcard__q">Drive the da Vinci / reproduce dissection</span>
+              <span class="startcard__a">sitl_ros2_dvrk <span aria-hidden="true">→</span></span>
+            </a>
+            <a class="startcard" href="#repo-vit">
+              <span class="startcard__q">Vision-only instrument pose</span>
+              <span class="startcard__a">stereo-endo-pose-vit <span aria-hidden="true">→</span></span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Repo cards -->
+        <div class="repos">
+
+          <!-- CRCD -->
+          <article class="repo" id="repo-crcd">
+            <div class="repo__head">
+              <div>
+                <h3 class="repo__name"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><use href="#i-data" /></svg> CRCD</h3>
+                <p class="repo__tag">The dataset &mdash; data &amp; tools for robotic cholecystectomy research</p>
+              </div>
+              <div class="repo__langs"><span>Dataset</span><span>ROS2 msgs</span><span>CC-BY-4.0</span></div>
+            </div>
+            <p class="repo__desc">
+              Synchronized stereo video, full da Vinci kinematics, pedal signals, and dense tissue/instrument annotations
+              from real <em>ex vivo</em> procedures. Includes loaders and tutorial notebooks. Available on Hugging Face and
+              via direct download.
+            </p>
+            <div class="repo__links">
+              <a class="btn btn--primary btn--xs" href="https://github.com/SITL-Eng/CRCD" target="_blank" rel="noopener">GitHub</a>
+              <a class="btn btn--ghost btn--xs" href="https://huggingface.co/datasets/SITL-Eng/CRCD" target="_blank" rel="noopener">🤗 Hugging Face</a>
+              <a class="btn btn--ghost btn--xs" href="https://arxiv.org/abs/2312.01183" target="_blank" rel="noopener">arXiv (ISMR)</a>
+              <a class="btn btn--ghost btn--xs" href="https://arxiv.org/abs/2412.12238" target="_blank" rel="noopener">arXiv (JMRR)</a>
+            </div>
+            <div class="codeblock">
+              <button class="copy" data-copy aria-label="Copy code">Copy</button>
+              <pre><code>from datasets import load_dataset
+
+# Stream the synchronized dataset straight from the Hub
+ds = load_dataset("SITL-Eng/CRCD", split="train", streaming=True)
+sample = next(iter(ds))
+print(sample.keys())  # stereo frames + kinematics + pedal signals</code></pre>
+            </div>
+          </article>
+
+          <!-- sitl_ros2_cv -->
+          <article class="repo" id="repo-cv">
+            <div class="repo__head">
+              <div>
+                <h3 class="repo__name"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><use href="#i-eye" /></svg> sitl_ros2_cv</h3>
+                <p class="repo__tag">Real-time computer vision for the da Vinci stereo endoscope</p>
+              </div>
+              <div class="repo__langs"><span>ROS2 Humble</span><span>Python</span><span>CUDA</span><span>MIT</span></div>
+            </div>
+            <p class="repo__desc">
+              Tissue segmentation (liver / gallbladder), surgical-instrument keypoint detection, stereo disparity, and 3D
+              point-cloud reconstruction &mdash; with YOLO11, Detectron2, and MaskDINO backends. This is the &ldquo;eyes&rdquo;
+              of the autonomous dissection system.
+            </p>
+            <div class="repo__links">
+              <a class="btn btn--primary btn--xs" href="https://github.com/SITL-Eng/sitl_ros2_cv" target="_blank" rel="noopener">GitHub</a>
+            </div>
+            <div class="codeblock">
+              <button class="copy" data-copy aria-label="Copy code">Copy</button>
+              <pre><code>cd ~/ros2_ws/src
+git clone https://github.com/SITL-Eng/sitl_ros2_cv.git
+cd ~/ros2_ws && colcon build --packages-select sitl_ros2_cv
+source install/setup.bash
+
+# Live liver / gallbladder segmentation with YOLO11
+ros2 launch sitl_ros2_cv yolo_seg_lv_gb.xml</code></pre>
+            </div>
+          </article>
+
+          <!-- sitl_ros2_dvrk -->
+          <article class="repo" id="repo-dvrk">
+            <div class="repo__head">
+              <div>
+                <h3 class="repo__name"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><use href="#i-arm" /></svg> sitl_ros2_dvrk</h3>
+                <p class="repo__tag">Control layer for the da Vinci Research Kit (dVRK)</p>
+              </div>
+              <div class="repo__langs"><span>ROS2 Humble</span><span>dVRK</span><span>Python</span></div>
+            </div>
+            <p class="repo__desc">
+              Custom kinematics, arm coordination, and the autonomous behaviors (grasp, stretch, dissect) that turn
+              perception into motion on the real robot. Pair it with <code>sitl_ros2_cv</code> to reproduce the dissection demos.
+            </p>
+            <div class="repo__links">
+              <a class="btn btn--primary btn--xs" href="https://github.com/SITL-Eng/sitl_ros2_dvrk" target="_blank" rel="noopener">GitHub</a>
+              <a class="btn btn--ghost btn--xs" href="https://github.com/hossein-haeri/sitl_ros2_interfaces" target="_blank" rel="noopener">Required: sitl_ros2_interfaces</a>
+            </div>
+            <div class="codeblock">
+              <button class="copy" data-copy aria-label="Copy code">Copy</button>
+              <pre><code># Requires ROS 2 Humble + the official dVRK ROS2 stack
+cd ~/ros2_ws/src
+git clone https://github.com/SITL-Eng/sitl_ros2_dvrk.git
+git clone https://github.com/hossein-haeri/sitl_ros2_interfaces.git
+pip install pyquaternion pyserial
+cd ~/ros2_ws && colcon build && source install/setup.bash</code></pre>
+            </div>
+          </article>
+
+          <!-- stereo-endo-pose-vit -->
+          <article class="repo" id="repo-vit">
+            <div class="repo__head">
+              <div>
+                <h3 class="repo__name"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><use href="#i-brain" /></svg> stereo-endo-pose-vit</h3>
+                <p class="repo__tag">Vision-Transformer instrument pose estimation from stereo images</p>
+              </div>
+              <div class="repo__langs"><span>PyTorch</span><span>ViT</span><span>YOLO11</span><span>uv</span></div>
+            </div>
+            <p class="repo__desc">
+              The full pipeline behind Contribution 03: train a ViT segmentation backbone on CRCD instrument masks, then
+              train stereo pose heads to regress end-effector state. Includes training/eval scripts, Grad-CAM, and 3D
+              visualization &mdash; a clean baseline for vision-only surgical pose estimation.
+            </p>
+            <div class="repo__links">
+              <a class="btn btn--primary btn--xs" href="https://github.com/koh43/stereo-endo-pose-vit" target="_blank" rel="noopener">GitHub</a>
+            </div>
+            <div class="codeblock">
+              <button class="copy" data-copy aria-label="Copy code">Copy</button>
+              <pre><code>git clone https://github.com/koh43/stereo-endo-pose-vit.git
+cd stereo-endo-pose-vit
+uv venv --python 3.12 && source .venv/bin/activate
+uv pip install -r requirements.txt
+
+# Train instrument segmentation (step 1 of the pipeline)
+python scripts/train_inst_seg_yolo11.py --data-dir /path/to/instrument_segmentation</code></pre>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================== PUBLICATIONS ============================== -->
+    <section class="section section--alt" id="publications">
+      <div class="container">
+        <div class="section__head">
+          <p class="kicker">Peer-reviewed work</p>
+          <h2>Publications</h2>
+          <p class="section__sub">The dissertation builds on these papers. Citations and links below.</p>
+        </div>
+
+        <ol class="pubs">
+          <li class="pub">
+            <span class="pub__venue pub__venue--journal">JMRR 2025</span>
+            <div class="pub__body">
+              <h3>Expanded Comprehensive Robotic Cholecystectomy Dataset (CRCD)</h3>
+              <p class="pub__authors">K.-H. Oh, L. Borgioli, A. Mangano, V. Valle, M. Di Pangrazio, F. Toti, G. Pozza, L. Ambrosini, A. Ducas, M. Žefran, L. Chen, P. C. Giulianotti</p>
+              <p class="pub__meta"><em>Journal of Medical Robotics Research</em>, 2025</p>
+              <div class="pub__links">
+                <a href="https://doi.org/10.1142/S2424905X25500060" target="_blank" rel="noopener">DOI</a>
+                <a href="https://arxiv.org/abs/2412.12238" target="_blank" rel="noopener">arXiv</a>
+              </div>
+            </div>
+          </li>
+
+          <li class="pub">
+            <span class="pub__venue">IROS 2025</span>
+            <div class="pub__body">
+              <h3>Autonomous Dissection in Robotic Cholecystectomy</h3>
+              <p class="pub__authors">K.-H. Oh, L. Borgioli, M. Žefran, V. Valle, P. C. Giulianotti</p>
+              <p class="pub__meta">IEEE/RSJ Int. Conf. on Intelligent Robots and Systems (IROS), pp. 11240–11246, 2025</p>
+              <div class="pub__links">
+                <a href="https://doi.org/10.1109/IROS60139.2025.11246364" target="_blank" rel="noopener">DOI</a>
+                <a href="https://arxiv.org/abs/2503.00666" target="_blank" rel="noopener">arXiv</a>
+              </div>
+            </div>
+          </li>
+
+          <li class="pub">
+            <span class="pub__venue">BioRob 2024</span>
+            <div class="pub__body">
+              <h3>A Framework for Automated Dissection Along Tissue Boundary</h3>
+              <p class="pub__authors">K.-H. Oh, L. Borgioli, M. Žefran, L. Chen, P. C. Giulianotti</p>
+              <p class="pub__meta">IEEE RAS/EMBS Int. Conf. for Biomedical Robotics and Biomechatronics (BioRob), pp. 1427–1433, 2024</p>
+              <div class="pub__links">
+                <a href="https://doi.org/10.1109/BioRob60516.2024.10719948" target="_blank" rel="noopener">DOI</a>
+              </div>
+            </div>
+          </li>
+
+          <li class="pub">
+            <span class="pub__venue">ISMR 2024</span>
+            <div class="pub__body">
+              <h3>Comprehensive Robotic Cholecystectomy Dataset (CRCD): Integrating Kinematics, Pedal Signals, and Endoscopic Videos</h3>
+              <p class="pub__authors">K.-H. Oh, L. Borgioli, A. Mangano, V. Valle, M. Di Pangrazio, F. Toti, G. Pozza, L. Ambrosini, A. Ducas, M. Žefran, L. Chen, P. C. Giulianotti</p>
+              <p class="pub__meta">Int. Symposium on Medical Robotics (ISMR), pp. 1–7, 2024</p>
+              <div class="pub__links">
+                <a href="https://doi.org/10.1109/ISMR63436.2024.10585836" target="_blank" rel="noopener">DOI</a>
+                <a href="https://arxiv.org/abs/2312.01183" target="_blank" rel="noopener">arXiv</a>
+              </div>
+            </div>
+          </li>
+
+          <li class="pub">
+            <span class="pub__venue">ICRA 2025</span>
+            <div class="pub__body">
+              <h3>Sensory Glove-Based Surgical Robot User Interface</h3>
+              <p class="pub__authors">L. Borgioli, K.-H. Oh, A. Mangano, A. Ducas, L. Ambrosini, F. Pinto, P. A. Lopez, J. Cassiani, M. Žefran, L. Chen, P. C. Giulianotti</p>
+              <p class="pub__meta">IEEE Int. Conf. on Robotics and Automation (ICRA), pp. 10487–10493, 2025</p>
+              <div class="pub__links">
+                <a href="https://arxiv.org/abs/2403.13941" target="_blank" rel="noopener">arXiv</a>
+              </div>
+            </div>
+          </li>
+        </ol>
+
+        <!-- Citation -->
+        <div class="cite">
+          <div class="cite__head">
+            <h3>Cite this dissertation</h3>
+            <button class="copy copy--inline" data-copy aria-label="Copy BibTeX">Copy BibTeX</button>
+          </div>
+          <pre><code>@phdthesis{oh2026autonomous,
+  author = {Oh, Ki-Hwan},
+  title  = {Towards Autonomous Robot-Assisted Surgery},
+  school = {University of Illinois Chicago},
+  year   = {2026}
+}</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================== ABOUT ============================== -->
+    <section class="section" id="about">
+      <div class="container">
+        <div class="about">
+          <div class="about__photo">
+            <img src="assets/img/author.jpg" alt="Portrait of Ki-Hwan Oh." loading="lazy" />
+          </div>
+          <div class="about__body">
+            <p class="kicker">About the author</p>
+            <h2>Ki-Hwan Oh</h2>
+            <p class="about__role">Ph.D. in Electrical &amp; Computer Engineering, University of Illinois Chicago</p>
+            <p>
+              I work at the intersection of <strong>surgical robotics, computer vision, and machine learning</strong>.
+              My doctoral research, carried out in the <a href="https://sitl.us/" target="_blank" rel="noopener">Surgical Innovation &amp; Training Lab</a>
+              under Prof. Miloš Žefran and in collaboration with the Division of General, Minimally Invasive and Robotic
+              Surgery, focuses on giving the da Vinci surgical robot the perception and autonomy needed to assist &mdash;
+              and eventually automate &mdash; steps of real procedures.
+            </p>
+            <p class="about__note">
+              I've also interned at <strong>Intuitive Surgical</strong> (makers of the da Vinci) and <strong>Retina Robotics</strong>,
+              and I'm continuing toward imitation-learning and vision-language-action models for surgical autonomy.
+            </p>
+            <div class="social">
+              <a class="social__link" href="mailto:koh43@uic.edu"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><use href="#i-mail" /></svg> koh43@uic.edu</a>
+              <a class="social__link" href="https://github.com/koh43" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><use href="#i-github" /></svg> GitHub</a>
+              <a class="social__link" href="https://scholar.google.com/citations?user=iLe85RMAAAAJ" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><use href="#i-scholar" /></svg> Google Scholar</a>
+              <a class="social__link" href="https://www.linkedin.com/in/ki-hwan-oh-268a66191/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><use href="#i-linkedin" /></svg> LinkedIn</a>
+              <a class="social__link" href="https://huggingface.co/koh43" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><use href="#i-hf" /></svg> Hugging Face</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Acknowledgements -->
+        <div class="ack">
+          <h3>Acknowledgements</h3>
+          <p>
+            This work was conducted at the <strong>Surgical Innovation &amp; Training Lab</strong> and the
+            <strong>UIC Robotics Lab</strong> at the University of Illinois Chicago. Special thanks to advisor
+            <strong>Prof. Miloš Žefran</strong>, to <strong>Leonardo Borgioli</strong> and the surgical team led by
+            <strong>Prof. Pier Cristoforo Giulianotti</strong>, and to the committee members
+            (A. E. Cetin, S. Han, L. Chen) for their guidance and collaboration.
+          </p>
+          <div class="ack__logos">
+            <img src="assets/img/uic_logo.png" alt="University of Illinois Chicago logo." loading="lazy" />
+            <img src="assets/img/sitl_logo.png" alt="Surgical Innovation and Training Lab logo." loading="lazy" />
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============================== FOOTER ============================== -->
+  <footer class="footer">
+    <div class="container footer__inner">
+      <div class="footer__col footer__brand">
+        <span class="nav__mark" aria-hidden="true"><svg viewBox="0 0 32 32" width="26" height="26"><use href="#logo-mark" /></svg></span>
+        <div>
+          <p class="footer__title">Towards Autonomous Robot-Assisted Surgery</p>
+          <p class="footer__sub">Ki-Hwan Oh · PhD Dissertation · University of Illinois Chicago · 2026</p>
+        </div>
+      </div>
+      <nav class="footer__links" aria-label="Footer">
+        <a href="#dataset">Dataset</a>
+        <a href="#dissection">Dissection</a>
+        <a href="#vision">Vision AI</a>
+        <a href="#replicate">Replicate</a>
+        <a href="#publications">Papers</a>
+        <a href="assets/docs/thesis.pdf" target="_blank" rel="noopener">Thesis PDF</a>
+      </nav>
+      <p class="footer__legal">
+        © <span id="year">2026</span> Ki-Hwan Oh. Research released openly for replication and reuse.<br />
+        <span class="footer__disclaimer">For research purposes only — not intended for clinical use without proper validation and regulatory approval.</span>
+      </p>
+    </div>
+    <a href="#top" class="totop" aria-label="Back to top">↑</a>
+  </footer>
+
+  <!-- ============================== SVG SPRITE ============================== -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <defs>
+      <symbol id="logo-mark" viewBox="0 0 32 32">
+        <rect x="2" y="2" width="28" height="28" rx="8" fill="currentColor" opacity="0.12"/>
+        <path d="M16 6v6M16 20v6M6 16h6M20 16h6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+        <circle cx="16" cy="16" r="3.4" fill="currentColor"/>
+      </symbol>
+      <symbol id="i-github" viewBox="0 0 24 24"><path fill="currentColor" d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.2.8-.5v-2c-3.2.7-3.9-1.4-3.9-1.4-.5-1.3-1.3-1.7-1.3-1.7-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.7 1.3 3.4 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 5 18.3 5.3 18.3 5.3c.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.6.8.5 4.6-1.5 7.9-5.8 7.9-10.9C23.5 5.7 18.3.5 12 .5z"/></symbol>
+      <symbol id="i-doc" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M6 2h8l4 4v16H6z"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M9 12h6M9 16h6"/></symbol>
+      <symbol id="i-code" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="m8 8-4 4 4 4M16 8l4 4-4 4"/></symbol>
+      <symbol id="i-data" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="3" fill="none" stroke="currentColor" stroke-width="2"/><path fill="none" stroke="currentColor" stroke-width="2" d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></symbol>
+      <symbol id="i-eye" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+      <symbol id="i-route" viewBox="0 0 24 24"><circle cx="6" cy="19" r="2.5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="18" cy="5" r="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M8 19h6a4 4 0 0 0 0-8H10a4 4 0 0 1 0-8h6"/></symbol>
+      <symbol id="i-arm" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M4 4v6l8 4v6M4 10l8-4 8 4"/><circle cx="4" cy="4" r="1.6" fill="currentColor"/><circle cx="20" cy="10" r="1.6" fill="currentColor"/></symbol>
+      <symbol id="i-brain" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 4a3 3 0 0 0-3 3 3 3 0 0 0-2 5 3 3 0 0 0 2 5 3 3 0 0 0 6 0 3 3 0 0 0 2-5 3 3 0 0 0-2-5 3 3 0 0 0-3-3zM12 4v18"/></symbol>
+      <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path fill="none" stroke="currentColor" stroke-width="2" d="m3 7 9 6 9-6"/></symbol>
+      <symbol id="i-scholar" viewBox="0 0 24 24"><path fill="currentColor" d="M12 3 1 9l11 6 9-4.9V17h2V9zM5 13.2V17c0 1.7 3.1 3 7 3s7-1.3 7-3v-3.8l-7 3.8z"/></symbol>
+      <symbol id="i-linkedin" viewBox="0 0 24 24"><path fill="currentColor" d="M4.98 3.5A2.5 2.5 0 1 0 5 8.5a2.5 2.5 0 0 0 0-5zM3 9h4v12H3zM9 9h3.8v1.7h.1c.5-1 1.8-2 3.7-2 4 0 4.7 2.6 4.7 6V21h-4v-5.3c0-1.3 0-2.9-1.8-2.9s-2 1.4-2 2.8V21H9z"/></symbol>
+      <symbol id="i-hf" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="9" cy="10" r="1.2" fill="currentColor"/><circle cx="15" cy="10" r="1.2" fill="currentColor"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M8.5 14.5a4 4 0 0 0 7 0"/></symbol>
+    </defs>
+  </svg>
+
+  <script src="script.js" defer></script>
+</body>
+</html>
