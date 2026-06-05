@@ -381,49 +381,49 @@
     <!-- ============================== CONTRIBUTION 3: VISION AI ============================== -->
     <section class="section section--alt" id="vision">
       <div class="container">
-        <div class="feature">
-          <div class="feature__media">
-            <div class="stereo">
-              <figure class="vidframe vidframe--sm">
-                <video loop muted playsinline preload="none" poster="assets/video/vit_left_poster.png" data-lazy-video aria-label="Left endoscope view with the predicted instrument tip position overlaid.">
-                  <source data-src="assets/video/vit_left.mp4" type="video/mp4" />
-                </video>
-                <figcaption>Left camera</figcaption>
-              </figure>
-              <figure class="vidframe vidframe--sm">
-                <video loop muted playsinline preload="none" poster="assets/video/vit_right_poster.png" data-lazy-video aria-label="Right endoscope view with the predicted instrument tip trajectory overlaid.">
-                  <source data-src="assets/video/vit_right.mp4" type="video/mp4" />
-                </video>
-                <figcaption>Right camera</figcaption>
-              </figure>
-            </div>
-            <p class="stereo__cap">Predicted instrument tip position, recovered purely from the stereo images.</p>
+        <div class="vision-intro">
+          <p class="kicker"><span class="badge badge--03">Contribution 03</span></p>
+          <h2>Finding the instruments in 3D &mdash; from pictures alone</h2>
+          <p class="lead-sm">
+            Robots normally know where their tools are from internal sensors (encoders). But that link can drift, break,
+            or simply be unavailable when learning from <em>video</em>. So I asked: <strong>can we recover an instrument's
+            3D position using nothing but the camera images?</strong>
+          </p>
+          <p>
+            The answer is a baseline framework built on <strong>Vision Transformers (ViT)</strong>. Each instrument gets
+            its own backbone, first trained to segment the tool, then paired with a lightweight stereo head that estimates
+            where the tip is in space &mdash; one model per instrument, which works better than forcing both into one.
+          </p>
+        </div>
+
+        <div class="stereo">
+          <figure class="vidframe">
+            <video loop muted playsinline preload="none" poster="assets/video/vit_left_poster.png" data-lazy-video aria-label="Left endoscope view with the predicted instrument tip position overlaid.">
+              <source data-src="assets/video/vit_left.mp4" type="video/mp4" />
+            </video>
+            <figcaption>Left camera</figcaption>
+          </figure>
+          <figure class="vidframe">
+            <video loop muted playsinline preload="none" poster="assets/video/vit_right_poster.png" data-lazy-video aria-label="Right endoscope view with the predicted instrument tip trajectory overlaid.">
+              <source data-src="assets/video/vit_right.mp4" type="video/mp4" />
+            </video>
+            <figcaption>Right camera</figcaption>
+          </figure>
+        </div>
+        <p class="stereo__cap">Predicted instrument tip position, recovered purely from the stereo images.</p>
+
+        <div class="vision-results">
+          <div class="result-grid">
+            <div class="result"><span class="result__big">0.94 cm</span><span class="result__cap">tip error<br/>Permanent Cautery Hook</span></div>
+            <div class="result"><span class="result__big">1.13 cm</span><span class="result__cap">tip error<br/>Fenestrated Bipolar Forceps</span></div>
+            <div class="result"><span class="result__big">Image-only</span><span class="result__cap">no robot encoders<br/>required at inference</span></div>
           </div>
-          <div class="feature__body">
-            <p class="kicker"><span class="badge badge--03">Contribution 03</span></p>
-            <h2>Finding the instruments in 3D &mdash; from pictures alone</h2>
-            <p class="lead-sm">
-              Robots normally know where their tools are from internal sensors (encoders). But that link can drift, break,
-              or simply be unavailable when learning from <em>video</em>. So I asked: <strong>can we recover an instrument's
-              3D position using nothing but the camera images?</strong>
-            </p>
-            <p>
-              The answer is a baseline framework built on <strong>Vision Transformers (ViT)</strong>. Each instrument gets
-              its own backbone, first trained to segment the tool, then paired with a lightweight stereo head that estimates
-              where the tip is in space &mdash; one model per instrument, which works better than forcing both into one.
-            </p>
-            <div class="result-grid">
-              <div class="result"><span class="result__big">0.94 cm</span><span class="result__cap">tip error<br/>Permanent Cautery Hook</span></div>
-              <div class="result"><span class="result__big">1.13 cm</span><span class="result__cap">tip error<br/>Fenestrated Bipolar Forceps</span></div>
-              <div class="result"><span class="result__big">Image-only</span><span class="result__cap">no robot encoders<br/>required at inference</span></div>
-            </div>
-            <p class="why">
-              <strong>Why it matters:</strong> recovering instrument state from images alone is a stepping stone to full
-              6-degree-of-freedom pose estimation, and to training robots from surgical video where sensor data doesn't exist.
-            </p>
-            <div class="btn-row">
-              <a class="btn btn--primary btn--sm" href="https://github.com/koh43/stereo-endo-pose-vit" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><use href="#i-github" /></svg> stereo-endo-pose-vit</a>
-            </div>
+          <p class="why">
+            <strong>Why it matters:</strong> recovering instrument state from images alone is a stepping stone to full
+            6-degree-of-freedom pose estimation, and to training robots from surgical video where sensor data doesn't exist.
+          </p>
+          <div class="btn-row btn-row--center">
+            <a class="btn btn--primary btn--sm" href="https://github.com/koh43/stereo-endo-pose-vit" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><use href="#i-github" /></svg> stereo-endo-pose-vit</a>
           </div>
         </div>
 

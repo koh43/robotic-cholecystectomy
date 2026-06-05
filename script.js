@@ -57,7 +57,7 @@
 
   /* ---------- Reveal on scroll ---------- */
   const revealEls = document.querySelectorAll(
-    ".explain__card, .pipe, .ccard, .feature, .duo, .gallery figure, .repo, .startcard, .pub, .cite, .about, .ack, .stat, .pipeline, .subfeature"
+    ".explain__card, .pipe, .ccard, .feature, .duo, .gallery figure, .repo, .startcard, .pub, .cite, .about, .ack, .stat, .pipeline, .subfeature, .vision-intro, .vision-results"
   );
   revealEls.forEach((el) => el.classList.add("reveal"));
 
